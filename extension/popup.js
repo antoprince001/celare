@@ -24,6 +24,7 @@ async function cloakContent(text) {
 document.getElementById("cloakButton").addEventListener("click", async () => {
     const inputText = document.getElementById("inputText").value;
     console.log("Working on cloaking content...");
+    document.getElementById("outputText").value = "";
     errorMsg.textContent = "";
     try {
         const cloakedData = await cloakContent(inputText);
