@@ -34,9 +34,9 @@ async def root():
 async def anonymize_text(text: Text):
     try:
         if not text or not text.content or text.content.strip() == "":
-            raise HTTPException(status_code=400, detail="No valid text provided")
+            return {"error": "No valid text provided"}
         if not (10 <= len(text.content) <= 500):
-            raise HTTPException(status_code=400, detail="Text length must be between 10 and 500 characters")
+            return {"error": "Text length must be between 10 and 500 characters"}
 
         analyzer_results = analyzer.analyze(text=text.content, entities=[], language='en')
         anonymized_content = anonymizer.anonymize(
@@ -51,9 +51,9 @@ async def anonymize_text(text: Text):
             }
         )
         if anonymized_content is None:
-            raise HTTPException(status_code=500, detail="An error occurred during anonymization")
+            return {"error": "An error occurred during anonymization"}
         if anonymized_content.text == text.content:
-            raise HTTPException(status_code=400, detail="No sensitive information found to anonymize")
+            return {"error": "No sensitive information found to anonymize"}
 
         anonymized_text = anonymized_content.text
         return {"anonymized_text": anonymized_text}

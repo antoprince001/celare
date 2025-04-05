@@ -1,23 +1,53 @@
-// Regex patterns for anonymization
-const patterns = {
-    email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
-    phone: /\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b/g,
-    name: /\b(John|Doe|Jane)\b/g // Example names; customize as needed
-};
-  
 // Function to anonymize content
-function cloakContent(text) {
-    return text
-        .replace(patterns.email, "[Email]")
-        .replace(patterns.phone, "[Phone]")
-        .replace(patterns.name, "[Name]");
+async function cloakContent(text) {
+
+
+    let headersList = {
+        "Content-Type": "application/json"
+    }
+       
+    let bodyContent = JSON.stringify({
+        "content" : text
+    });
+       
+    let response = await fetch("http://localhost:8000/v1/anonymize", { 
+        method: "POST",
+        body: bodyContent,
+        headers: headersList
+    });
+       
+    let data = await response.json();
+    return data;
 }
   
 // Handle cloak button click
-document.getElementById("cloakButton").addEventListener("click", () => {
+document.getElementById("cloakButton").addEventListener("click", async () => {
     const inputText = document.getElementById("inputText").value;
-    const cloakedText = cloakContent(inputText);
-    document.getElementById("outputText").value = cloakedText;
+    console.log("Working on cloaking content...");
+    errorMsg.textContent = "";
+    try {
+        const cloakedData = await cloakContent(inputText);
+        if (cloakedData === undefined || cloakedData === null) {
+            errorMessageContent = "No response from server";
+            errorMsg.textContent = errorMessageContent;
+            return;
+        }
+        if('anonymized_text' in cloakedData){
+            cloakedText = cloakedData['anonymized_text'];
+            document.getElementById("outputText").value = cloakedText;
+        }
+        else if('error' in cloakedData){            
+            errorMessageContent = cloakedData['error'];
+            errorMsg.textContent = errorMessageContent;
+        }
+        else {
+            errorMessageContent = "Unexpected response format";
+            errorMsg.textContent = errorMessageContent;
+        }
+    } catch (error) {
+        errorMessageContent = "Error cloaking text - " + error;
+        errorMsg.textContent = errorMessageContent;
+    }
 });
   
 // Handle copy button click

@@ -20,8 +20,8 @@ def test_anonymize_text_valid():
         json={"content": " "},
     )
 
-    assert response_1.json() == {'error': '400: No valid text provided'}
-    assert response_2.json() == {'error': '400: No valid text provided'}
+    assert response_1.json() == {'error': 'No valid text provided'}
+    assert response_2.json() == {'error': 'No valid text provided'}
 
 
 def test_anonymize_text_valid_length():
@@ -34,8 +34,8 @@ def test_anonymize_text_valid_length():
         json={"content": "a" * 501},
     )
 
-    assert response_1.json() == {'error': '400: Text length must be between 10 and 500 characters'}
-    assert response_2.json() == {'error': '400: Text length must be between 10 and 500 characters'}
+    assert response_1.json() == {'error': 'Text length must be between 10 and 500 characters'}
+    assert response_2.json() == {'error': 'Text length must be between 10 and 500 characters'}
 
 
 def test_anonymize_text_with_no_sensitive_content():
@@ -44,7 +44,7 @@ def test_anonymize_text_with_no_sensitive_content():
         json={"content": "This is a test text with no info."}
     )
 
-    assert response.json() == {'error': '400: No sensitive information found to anonymize'}
+    assert response.json() == {'error': 'No sensitive information found to anonymize'}
 
 
 def test_anonymize_text_valid_anonymization():
