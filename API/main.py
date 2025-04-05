@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from pydantic import BaseModel
-from presidio_analyzer import AnalyzerEngine, PatternRecognizer
+from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
 
+
 class Text(BaseModel):
     content: str
+
 
 analyzer = AnalyzerEngine()
 anonymizer = AnonymizerEngine()
@@ -22,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "Celare API is running!"}
@@ -35,7 +38,7 @@ async def anonymize_text(text: Text):
         if not (10 <= len(text.content) <= 500):
             raise HTTPException(status_code=400, detail="Text length must be between 10 and 500 characters")
 
-        analyzer_results = analyzer.analyze(text=text.content, entities=[],language='en')
+        analyzer_results = analyzer.analyze(text=text.content, entities=[], language='en')
         anonymized_content = anonymizer.anonymize(
             text=text.content,
             analyzer_results=analyzer_results,
@@ -55,4 +58,4 @@ async def anonymize_text(text: Text):
         anonymized_text = anonymized_content.text
         return {"anonymized_text": anonymized_text}
     except Exception as e:
-        return {"error": "An error occurred during anonymization", "details": str(e)}
+        return {"error": str(e)}

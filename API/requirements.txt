@@ -2,3 +2,4 @@
 fastapi==0.115.12
 presidio_analyzer==2.2.358
 presidio_anonymizer==2.2.358
+pytest
