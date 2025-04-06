@@ -8,7 +8,16 @@
   <div class="container">
     <h1>Celare - The Content Cloaker</h1>
     <textarea id="inputText" placeholder="Paste your content here..."></textarea>
+    <div class="action-row">
+    <label for="anonymizationType">Anonymization Type:</label>
+    <select id="anonymizationType">
+      <option value="replace">Replace</option>
+      <option value="redact">Redact</option>
+      <option value="mask">Mask</option>
+      <option value="hash">Hash</option>
+    </select>
     <button id="cloakButton">Cloak Content</button>
+    </div>
     <br><br>
     <textarea id="outputText" placeholder="Cloaked content will appear here..." readonly></textarea>
     <button id="copyButton">Copy Cloaked Content</button>

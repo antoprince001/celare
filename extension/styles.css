@@ -55,4 +55,24 @@ button:hover {
 button:active {
     background-color: #3e8e41;
 }
-  
+
+.action-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Helps on small screens */
+    margin: 10px 0;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+select {
+    padding: 6px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
