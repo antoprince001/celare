@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import HTTPException
 from pydantic import BaseModel
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
-from presidio_anonymizer.entities import OperatorConfig
+from .operator_configs import operator_configs
 
 
 class Text(BaseModel):
     content: str
+    type_of_anonymization: str = "replace"  # "mask", "hash", "redact", "replace"
 
 
 analyzer = AnalyzerEngine()
@@ -37,18 +37,13 @@ async def anonymize_text(text: Text):
             return {"error": "No valid text provided"}
         if not (10 <= len(text.content) <= 500):
             return {"error": "Text length must be between 10 and 500 characters"}
-
+        if text.type_of_anonymization not in ["mask", "hash", "redact", "replace"]:
+            return {"error": "Invalid type of anonymization. Must be one of: mask, hash, redact, replace"}
         analyzer_results = analyzer.analyze(text=text.content, entities=[], language='en')
         anonymized_content = anonymizer.anonymize(
             text=text.content,
             analyzer_results=analyzer_results,
-            operators={
-                "DEFAULT": OperatorConfig("replace", {"new_value": "<REDACTED>"}),
-                "PHONE_NUMBER": OperatorConfig("replace", {"new_value": "<PHONE_NUMBER>"}),
-                "TITLE": OperatorConfig("replace", {"new_value": "<TITLE>"}),
-                "EMAIL_ADDRESS": OperatorConfig("replace", {"new_value": "<EMAIL>"}),
-                "PERSON": OperatorConfig("replace", {"new_value": "<PERSON>"})
-            }
+            operators=operator_configs[text.type_of_anonymization]
         )
         if anonymized_content is None:
             return {"error": "An error occurred during anonymization"}
